@@ -1,3 +1,99 @@
+.imagesCarouselAddButtonLabel {
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 44px;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background-color: rgb(230, 230, 230);
+}
+.imagesCarouselAddButtonLabel:hover {
+  background-color: rgb(200, 200, 200);
+}
+
+#ImageCarouselMain {
+  width: 200px;
+  justify-content: center;
+}
+#imageCarouselSelectorMain {
+  height: 44px;
+  display: flex;
+  border-radius: 5px;
+  background-color: black;
+}
+#imageCarouselSelectorImages {
+  background-color: black;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  display: inline-flex;
+  justify-content: start;
+  flex-direction: row;
+  width: 156px;
+  height: 44px;
+  overflow: scroll;
+}
+#imageCarouselSelectorImages > img {
+  height: 44px;
+}
+
+.imageCarouselMainImage {
+  height: 200px;
+  width: 200px;
+  padding: 0px;
+  background-color: black;
+  object-fit: contain;
+}
+
+#faceCarouselSelectorImages {
+  background-color: black;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  display: inline-flex;
+  justify-content: start;
+  flex-direction: row;
+  width: 200px;
+  height: 44px;
+  overflow: scroll;
+}
+#faceCarouselSelectorImages > img {
+  max-height: 44px;
+  min-height: 44px;
+  height: auto;
+  width: auto;
+}
+#faceCarouselSelectorImages > .active {
+  border: solid;
+  border-color: white;
+  border-radius: 5px;
+}
+.progressIndicator {
+  border-radius: 5px;
+  border-width: 1px;
+  margin-left: 1px;
+  margin-right: 1px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: inline-block;
+  border: solid;
+  border-width: 1px;
+  color: white;
+}
+
+.progressIndicatorInactive {
+  background-color: rgb(220, 220, 220);
+  border-color: rgb(200, 200, 200);
+}
+.progressIndicatorActive {
+  background-color: rgb(130, 214, 84);
+  border-color: rgb(117, 193, 75);
+}
+.progressIndicatorDanger {
+  background-color: rgb(237, 77, 61);
+  border-color: rgb(214, 69, 55);
+}
+
 .App {
   text-align: center;
 }
