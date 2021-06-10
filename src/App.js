@@ -181,13 +181,6 @@ function App() {
         modelLoaded={modelLoaded}
       />
       <WebcamComponent addImage={imageFromWebcam} />
-      {/* Faces
-      <FaceCarousel
-        addImage={addImage}
-        removeImage={removeImage}
-        images={faces}
-        faceapi={faceapi}
-      /> */}
     </div>
   );
 }
