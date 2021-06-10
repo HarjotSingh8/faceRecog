@@ -7,144 +7,187 @@ import ImageCarousel from "./components/ImageCarousel";
 import "bootstrap/dist/css/bootstrap.css";
 import * as faceapi from "face-api.js";
 import FaceCarousel from "./components/FaceCarousel";
+import { withWidth } from "@material-ui/core";
+import WebcamComponent from "./components/webcamComponent";
 function App() {
   const [modelLoaded, setModelLoaded] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState([]);
+  const [multiFaceUpload, setMultiFaceUpload] = useState(true);
   const [faces, setFaces] = useState([]);
+  const [capturingWebCamForDatabase, setCapturingWebCamForDatabase] =
+    useState(false);
+  const [capturingWebcamForReference, setCapturingWebCamForReference] =
+    useState(false);
   const [progressStatus, setProgressStatus] = useState({
     createDatabase: { label: "Create Database", status: 0 },
     uploadQueryImage: { label: "Upload Query", status: 0 },
     results: { label: "Results", status: 0 },
   });
-
   useEffect(() => {
-    console.log(faceapi);
+    console.log("rerender");
+  }, []);
+  useEffect(() => {
+    // console.log(faceapi);
     //faceapi.TinyFaceDetector();
     // faceapi.ssdMobilenetv1();
     async function loadModel() {
       const MODEL_URL = process.env.PUBLIC_URL + "/models";
       await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
       setModelLoaded(true);
-      console.log(faceapi);
+      // console.log(faceapi);
     }
     loadModel();
   });
-
-  const addImage = (e) => {
-    let temp = [...uploadedImages];
+  function imageFromFile(e) {
     console.log(e);
-    temp.push({
-      url: URL.createObjectURL(e.target.files[0]),
-      processed: false,
+    let addedImage = URL.createObjectURL(e.target.files[0]);
+    console.log(addedImage);
+    addImage(addedImage);
+  }
+  async function imageFromWebcam(addedImage) {
+    let aspect_ratio = 16 / 9;
+    /**
+     * takes user added image and extracts faces
+     */
+    //let addedImage = URL.createObjectURL(e.target.files[0]);
+    console.log(addedImage);
+    document.getElementById("hiddenImage").src = addedImage;
+    var options = new faceapi.SsdMobilenetv1Options({
+      minConfidence: 0.4,
     });
-    setUploadedImages(temp);
-  };
-  const removeImage = (index) => {
+    console.log(faces);
+    let predictions = await faceapi.detectAllFaces("hiddenImage", options);
+    let temp = [];
+    for (var i = 0; i < predictions.length; i++) {
+      let x = predictions[i].box._x;
+      let y = predictions[i].box._y;
+      let width = predictions[i].box._width;
+      let height = predictions[i].box.height;
+      let adjustmentx = 0;
+      let adjustmenty = 0;
+      if (width * aspect_ratio > height) {
+        adjustmenty = width * aspect_ratio - height;
+      } else if (height > width * aspect_ratio) {
+        adjustmentx = height / aspect_ratio - width;
+      }
+      var canv = await faceapi.extractFaces("hiddenImage", [
+        new faceapi.Rect(
+          predictions[i].box._x - adjustmentx / 2,
+          predictions[i].box._y - adjustmenty / 2,
+          predictions[i].box._width + adjustmentx,
+          predictions[i].box._height + adjustmenty
+        ),
+      ]);
+      predictions[i].url = canv[0].toDataURL();
+      // console.log(canv[0]);
+      //let tempUrl = canv[0].toDataURL();
+      //canv[0].drawImage(tempUrl, 0, 0, 36, 64);
+      temp.push(canv[0].toDataURL());
+      // canv = null;
+    }
+    let f = [...faces, ...temp];
+    console.log(f);
+    //f.push(...predictions);
+    setFaces(f);
+
+    // let temp = [...uploadedImages];
+    // console.log(e);
+    // temp.push({
+    //   url: URL.createObjectURL(e.target.files[0]),
+    //   processed: false,
+    // });
+    // setUploadedImages(temp);
+  }
+  async function addImage(addedImage) {
+    let aspect_ratio = 16 / 9;
+    /**
+     * takes user added image and extracts faces
+     */
+    //let addedImage = URL.createObjectURL(e.target.files[0]);
+    document.getElementById("hiddenImage").src = addedImage;
+
+    var options = new faceapi.SsdMobilenetv1Options({
+      minConfidence: 0.4,
+    });
+    console.log(faces);
+    let predictions = await faceapi.detectAllFaces("hiddenImage", options);
+    let temp = [];
+    for (var i = 0; i < predictions.length; i++) {
+      let x = predictions[i].box._x;
+      let y = predictions[i].box._y;
+      let width = predictions[i].box._width;
+      let height = predictions[i].box.height;
+      let adjustmentx = 0;
+      let adjustmenty = 0;
+      if (width * aspect_ratio > height) {
+        adjustmenty = width * aspect_ratio - height;
+      } else if (height > width * aspect_ratio) {
+        adjustmentx = height / aspect_ratio - width;
+      }
+      var canv = await faceapi.extractFaces("hiddenImage", [
+        new faceapi.Rect(
+          predictions[i].box._x - adjustmentx / 2,
+          predictions[i].box._y - adjustmenty / 2,
+          predictions[i].box._width + adjustmentx,
+          predictions[i].box._height + adjustmenty
+        ),
+      ]);
+      predictions[i].url = canv[0].toDataURL();
+      // console.log(canv[0]);
+      //let tempUrl = canv[0].toDataURL();
+      //canv[0].drawImage(tempUrl, 0, 0, 36, 64);
+      temp.push(canv[0].toDataURL());
+      // canv = null;
+    }
+    let f = [...faces, ...temp];
+    console.log(f);
+    //f.push(...predictions);
+    setFaces(f);
+
+    // let temp = [...uploadedImages];
+    // console.log(e);
+    // temp.push({
+    //   url: URL.createObjectURL(e.target.files[0]),
+    //   processed: false,
+    // });
+    // setUploadedImages(temp);
+  }
+  const removeFace = (index) => {
     var temp = [];
-    for (var i = 0; i < uploadedImages.length; i++) {
+    for (var i = 0; i < faces.length; i++) {
       if (index != i) {
-        temp.push(uploadedImages[i]);
+        temp.push(faces[i]);
+      } else {
+        URL.revokeObjectURL(faces[i]);
       }
     }
-    setUploadedImages(temp);
+    setFaces(temp);
   };
-
-  useEffect(() => {
-    //scan faces on a change in uploaded images
-    async function addNewFaces() {
-      let flag = -1;
-      for (var i = 0; i < uploadedImages.length; i++) {
-        if (uploadedImages[i].processed == false) {
-          console.log("yes");
-
-          flag = i;
-          document.getElementById("hiddenImage").src = uploadedImages[i].url;
-          break;
-        }
-      }
-      if (flag !== -1) {
-        async function processImage() {
-          // let x = await faceapi.allFacesSsdMobilenetv1(
-          //   //uploadedImages[flag].url,
-          //   "activeImage",
-          //   0.1
-          // );
-
-          var options = new faceapi.SsdMobilenetv1Options({
-            minConfidence: 0.4,
-          });
-          let predictions = await faceapi.detectAllFaces(
-            "hiddenImage",
-            options
-          );
-          //let boxes = [];
-          for (var i = 0; i < predictions.length; i++) {
-            predictions[i].url = uploadedImages[flag].url;
-            var canv = await faceapi.extractFaces("hiddenImage", [
-              new faceapi.Rect(
-                predictions[i].box._x,
-                predictions[i].box._y,
-                predictions[i].box._width,
-                predictions[i].box._height
-              ),
-            ]);
-            var img = new Image();
-            img.src = canv[0].toDataURL();
-            predictions[i].canvas = canv[0].toDataURL();
-            // boxes.push(
-            //   new faceapi.Rect(
-            //     predictions[i].box._x,
-            //     predictions[i].box._y,
-            //     predictions[i].box._x + predictions[i].box._width,
-            //     predictions[i].box._y + predictions[i].box._height
-            //   )
-            // );
-          }
-          // actually extractFaces is meant to extract face regions from bounding boxes
-          // but you can also use it to extract any other region
-          //const canvases = await faceapi.extractFaces("hiddenImage", boxes);
-          //console.log(canvases);
-          let f = [...faces];
-          f.push(...predictions);
-          setFaces(f);
-          let temp = [...uploadedImages];
-          temp[flag].processed = true;
-          setUploadedImages(temp);
-
-          console.log(predictions);
-        }
-        processImage();
-      }
-    }
-    addNewFaces();
-  }, [uploadedImages, modelLoaded]);
 
   const updateProgress = (level, status) => {
     var progress = { ...progressStatus };
-    console.log(progress);
+    // console.log(progress);
     progress[level].status = status;
     setProgressStatus(progress);
   };
-  console.log(progressStatus);
-  console.log(uploadedImages);
   return (
-    <div className="App">
+    <div className="App ">
       <img id="hiddenImage" style={{ display: "none" }} src="" />
       <ProgressIndicator states={progressStatus} />
-      <ImageUploadButton id="imageUpload" addImage={addImage} />
       Images
       <ImageCarousel
-        addImage={addImage}
-        removeImage={removeImage}
-        images={uploadedImages}
+        addImage={imageFromFile}
+        removeImage={removeFace}
+        images={faces}
+        modelLoaded={modelLoaded}
       />
-      Faces
+      <WebcamComponent addImage={imageFromWebcam} />
+      {/* Faces
       <FaceCarousel
         addImage={addImage}
         removeImage={removeImage}
         images={faces}
         faceapi={faceapi}
-      />
+      /> */}
     </div>
   );
 }

@@ -14,8 +14,7 @@ const ImageUploadButton = (props) => {
         type="file"
         accept="image/*"
         onChange={(e) => {
-          console.log("yolo");
-          props.addImage(e);
+          if (props.modelLoaded) props.addImage(e);
         }}
       />
     </div>

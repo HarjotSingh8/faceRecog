@@ -8,16 +8,25 @@ const Selector = (props) => {
     <div id="imageCarouselSelectorMain">
       <div id="imageCarouselSelectorImages">
         {props.images.map((obj, index) => (
-          <img
-            src={obj.url}
-            onClick={() => {
-              props.setActive(index);
-            }}
-          />
+          <div
+            className={"" + (props.active === index ? "active" : "inactive")}
+            style={{ height: "50px" }}
+          >
+            <img
+              className={"" + (props.active === index ? "active" : "inactive")}
+              src={obj}
+              onClick={() => {
+                props.setActive(index);
+              }}
+            />
+          </div>
         ))}
       </div>
-      <ImageUploadButton addImage={props.addImage} id="imagesCarouselAddButton">
-        {/* <div>+</div> */}
+      <ImageUploadButton
+        modelLoaded={props.modelLoaded}
+        addImage={props.addImage}
+        id="imagesCarouselAddButton"
+      >
         <AddToPhotosIcon />
       </ImageUploadButton>
     </div>
@@ -41,8 +50,12 @@ const ImageCarousel = (props) => {
    * null when no image present
    */
   const [active, setActive] = useState(0);
-  useEffect(() => {}, [props.images]);
-  console.log(props);
+  useEffect(() => {
+    if (props.images.length == 1) {
+      setActive(0);
+    }
+  }, [props.images]);
+  //   console.log(props);
   return (
     <div id="ImageCarouselMain" className="">
       {/** Active image here */}
@@ -58,14 +71,15 @@ const ImageCarousel = (props) => {
                 cursor: "pointer",
               }}
               onClick={() => {
-                setActive(active - 1);
+                if (active > 0) setActive(active - 1);
+                if (props.images.length == 1) setActive(-1);
                 props.removeImage(active);
               }}
             />
             <img
               id="activeImage"
               className="imageCarouselMainImage"
-              src={props.images[active].url}
+              src={props.images[active]}
             />
           </div>
         ) : (
@@ -79,6 +93,7 @@ const ImageCarousel = (props) => {
         images={props.images}
         active={active}
         setActive={setActive}
+        modelLoaded={props.modelLoaded}
       />
     </div>
   );

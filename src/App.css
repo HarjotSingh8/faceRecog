@@ -13,11 +13,12 @@
 }
 
 #ImageCarouselMain {
-  width: 200px;
+  width: 180px;
   justify-content: center;
+  border-radius: 10px;
 }
 #imageCarouselSelectorMain {
-  height: 44px;
+  height: 50px;
   display: flex;
   border-radius: 5px;
   background-color: black;
@@ -29,20 +30,34 @@
   display: inline-flex;
   justify-content: start;
   flex-direction: row;
-  width: 156px;
-  height: 44px;
+  width: 180px;
+  height: 50px;
   overflow: scroll;
 }
-#imageCarouselSelectorImages > img {
+#imageCarouselSelectorImages > div > img {
   height: 44px;
+  border: solid;
+  border-color: black;
+  border-radius: 4px;
+}
+#imageCarouselSelectorImages > .active {
+  border: solid;
+  border-color: white;
+  border-radius: 5px;
+}
+#imageCarouselSelectorImages > .inactive {
+  border: solid;
+  border-color: black;
+  border-radius: 5px;
 }
 
 .imageCarouselMainImage {
-  height: 200px;
-  width: 200px;
+  height: 320px;
+  width: 180px;
   padding: 0px;
   background-color: black;
   object-fit: contain;
+  border-radius: 10px;
 }
 
 #faceCarouselSelectorImages {
@@ -92,43 +107,4 @@
 .progressIndicatorDanger {
   background-color: rgb(237, 77, 61);
   border-color: rgb(214, 69, 55);
-}
-
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
