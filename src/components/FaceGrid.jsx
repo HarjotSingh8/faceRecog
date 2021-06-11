@@ -4,9 +4,9 @@ import AddToPhotosIcon from "@material-ui/icons/AddToPhotos";
 import DeleteForever from "@material-ui/icons/DeleteForever";
 import { LocalConvenienceStoreRounded } from "@material-ui/icons";
 import personImage from "../images/stockperson.png";
-const DummyCarousel = (props) => {
+const DummyGrid = (props) => {
   return (
-    <div id="faceCarouselRow" className="row justify-content-center">
+    <div id="faceGrid" className="row mx-0 col-12 justify-content-center">
       <div
         className="d-flex bg-light shadow my-2 mx-2 px-0"
         style={{
@@ -36,11 +36,10 @@ const DummyCarousel = (props) => {
   );
 };
 
-const FaceCarousel = (props) => {
-  if (props.images.length == 0) return <DummyCarousel />;
+const FaceGrid = (props) => {
+  if (props.images.length == 0) return <DummyGrid />;
   return (
-    <div id="faceCarouselRow" className="row mx-0 px-0">
-      <div className="spacerCarouselRow" style={{ width: "10px" }}></div>
+    <div id="faceGrid" className="row mx-0 justify-content-center px-2">
       {props.images.map((obj, index) => (
         <div className="my-2 mx-2 shadow px-0">
           <DeleteForever
@@ -60,9 +59,8 @@ const FaceCarousel = (props) => {
           <img src={obj} />
         </div>
       ))}
-      <div className="spacerCarouselRow" style={{ width: "10px" }}></div>
     </div>
   );
 };
 
-export default FaceCarousel;
+export default FaceGrid;

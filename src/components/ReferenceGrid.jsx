@@ -4,9 +4,9 @@ import AddToPhotosIcon from "@material-ui/icons/AddToPhotos";
 import DeleteForever from "@material-ui/icons/DeleteForever";
 import { LocalConvenienceStoreRounded } from "@material-ui/icons";
 import personImage from "../images/stockperson.png";
-const DummyCarousel = (props) => {
+const DummyGrid = (props) => {
   return (
-    <div id="faceCarouselRow" className="row justify-content-center">
+    <div id="faceGrid" className="row mx-0 col-12 justify-content-center">
       <div
         className="d-flex bg-light shadow my-2 mx-2 px-0"
         style={{
@@ -36,13 +36,17 @@ const DummyCarousel = (props) => {
   );
 };
 
-const FaceCarousel = (props) => {
-  if (props.images.length == 0) return <DummyCarousel />;
+const ReferenceGrid = (props) => {
+  if (props.images.length == 0) return <DummyGrid />;
   return (
-    <div id="faceCarouselRow" className="row mx-0 px-0">
-      <div className="spacerCarouselRow" style={{ width: "10px" }}></div>
+    <div id="referenceGrid" className="row mx-0 justify-content-center px-2">
       {props.images.map((obj, index) => (
-        <div className="my-2 mx-2 shadow px-0">
+        <div
+          className={
+            "my-2 mx-2 shadow px-0  " +
+            (props.active == index ? "activeGrid" : "inactiveGrid")
+          }
+        >
           <DeleteForever
             style={{
               position: "absolute",
@@ -52,17 +56,26 @@ const FaceCarousel = (props) => {
               cursor: "pointer",
             }}
             onClick={() => {
-              //   if (active > 0) setActive(active - 1);
-              //   if (props.images.length == 1) setActive(-1);
+              if (props.active > 0 && props.active >= index)
+                props.setActive(props.active - 1);
+              if (props.images.length == 1) props.setActive(-1);
               props.removeImage(index);
             }}
           />
-          <img src={obj} />
+          <img
+            className="shadow position-absolute top-50 start-50 translate-middle"
+            src={obj}
+            className={
+              props.active == index ? "activeGridImg" : "inactiveGridImg"
+            }
+            onClick={() => {
+              props.setActive(index);
+            }}
+          />
         </div>
       ))}
-      <div className="spacerCarouselRow" style={{ width: "10px" }}></div>
     </div>
   );
 };
 
-export default FaceCarousel;
+export default ReferenceGrid;
