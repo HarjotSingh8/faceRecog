@@ -1,3 +1,181 @@
+.activeGridImg {
+  border: solid;
+  border-color: orange;
+  height: 170px;
+  width: 100px;
+  border-width: 5px;
+}
+.inactiveGridImg {
+  margin: 5px;
+  height: 160px;
+  width: 90px;
+}
+.bd-blur {
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 15px;
+}
+
+.btn-group > button {
+  width: 160px;
+}
+
+.btn-group > div {
+  width: 160px;
+}
+
+#faceGrid {
+  width: 100%;
+}
+
+#faceGrid > div {
+  border-radius: 15px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 160px;
+  width: 90px;
+  position: relative;
+}
+
+#faceGrid > div > img {
+  border-radius: 15px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 160px;
+  width: 90px;
+}
+#faceGrid > div > svg {
+  position: absolute;
+  top: 7.5px;
+  right: 7.5px;
+  color: white;
+  cursor: pointer;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 2px;
+}
+#faceGrid > div:hover > svg {
+  display: block;
+}
+
+#referenceGrid {
+  width: 100%;
+}
+
+#referenceGrid > div {
+  border-radius: 15px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 170px;
+  width: 100px;
+  position: relative;
+  overflow: visible;
+}
+
+#referenceGrid > div > img {
+  border-radius: 10px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#referenceGrid > div > svg {
+  position: absolute;
+  top: 7.5px;
+  right: 7.5px;
+  color: white;
+  cursor: pointer;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 2px;
+}
+#referenceGrid > div:hover > svg {
+  display: block;
+}
+
+#faceCarouselRow {
+  /* overflow-x: scroll;
+  flex-wrap: nowrap;
+  white-space: nowrap; */
+  width: 100%;
+}
+
+#faceCarouselRow > div {
+  border-radius: 15px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 160px;
+  width: 90px;
+  position: relative;
+}
+
+#faceCarouselRow > div > img {
+  border-radius: 15px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 160px;
+  width: 90px;
+}
+#faceCarouselRow > div > svg {
+  position: absolute;
+  top: 7.5px;
+  right: 7.5px;
+  color: white;
+  cursor: pointer;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 2px;
+}
+#faceCarouselRow > div:hover > svg {
+  display: block;
+}
+
+#referenceCarouselRow {
+  overflow-x: scroll;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  width: 100%;
+}
+
+#referenceCarouselRow > div {
+  border-radius: 15px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 170px;
+  width: 100px;
+  position: relative;
+  overflow: visible;
+}
+
+#referenceCarouselRow > div > img {
+  border-radius: 15px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#referenceCarouselRow > div > svg {
+  position: absolute;
+  top: 7.5px;
+  right: 7.5px;
+  color: white;
+  cursor: pointer;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 2px;
+}
+#referenceCarouselRow > div:hover > svg {
+  display: block;
+}
+
 .imagesCarouselAddButtonLabel {
   border-radius: 5px;
   cursor: pointer;
@@ -82,6 +260,21 @@
   border-color: white;
   border-radius: 5px;
 }
+
+.activeGrid > img {
+  border: solid;
+  border-color: orange;
+  height: 170px;
+  width: 100px;
+  border-width: 5px;
+}
+
+#navbar {
+  padding: 10px;
+  font-size: xx-large;
+  font-weight: bold;
+}
+
 .progressIndicator {
   border-radius: 5px;
   border-width: 1px;
@@ -107,4 +300,19 @@
 .progressIndicatorDanger {
   background-color: rgb(237, 77, 61);
   border-color: rgb(214, 69, 55);
+}
+
+#webcamBackdrop {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  backdrop-filter: blur(5px);
+}
+
+#webcamModal {
+}
+
+#webCamMain {
+  width: 960px;
+  height: 540px;
 }
