@@ -9,9 +9,15 @@ const ResultControls = (props) => {
         Complete Steps 1 & 2 to Match Results
       </div>
     );
-  } else if (props.results == -1) {
+  } else if (props.progressStatus.results.status == -1) {
     //can evaluate results
+    return <div>Match Results</div>;
+  } else if (props.progressStatus.results.status == 0) {
+    //evaluating results
     return <div></div>;
-  } else return <div></div>;
+  } else {
+    //showing results
+    return <div></div>;
+  }
 };
 export default ResultControls;

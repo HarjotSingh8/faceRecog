@@ -24,6 +24,7 @@ const ImageUploadButton = (props) => {
           if (props.modelLoaded) {
             //console.log(e);
             let addedImage = URL.createObjectURL(e.target.files[0]);
+            console.log(e.target.files);
             props.addImage(addedImage, props.target);
           }
         }}
