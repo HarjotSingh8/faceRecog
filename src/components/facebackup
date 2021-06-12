@@ -1,0 +1,200 @@
+import { useEffect, useState } from "react";
+import stockPhoto from "../images/stockperson.png";
+const FoundFace = (props) => {
+  const [img, setImg] = useState(false);
+  useEffect(() => {
+    // async function getImage() {
+    //   if (props.image != false) {
+    //     let temp;
+    //     //   fetch(
+    //     //     props.image.image +
+    //     //       "?key=662b2a0adeb3bbc7388bb274fc735c98648f0c70e6ebde9aebb9b56784f05d33"
+    //     //   )
+    //     //     .then((response) => response.blob())
+    //     //     .then((images) => {
+    //     //       temp = URL.createObjectURL(images);
+    //     //       console.log(temp);
+    //     let canvas = document.getElementById("faceCanvas");
+    //     let ctx = canvas.getContext("2d");
+    //     let imagecomp = document.getElementById("faceImage");
+    //     imagecomp.src = temp;
+    //     await new Promise((resolve) => setTimeout(resolve, 1500));
+    //     canvas.width = props.image.coordinates[2];
+    //     canvas.height = props.image.coordinates[3];
+    //     ctx.drawImage(
+    //       imagecomp,
+    //       -props.image.coordinates[0],
+    //       -props.image.coordinates[1],
+    //       props.image.coordinates[2],
+    //       props.image.coordinates[3]
+    //     );
+    //     let t = canvas.toDataURL();
+    //     setImg(t);
+    //   }
+    // }
+    // getImage();
+    if (props.image != false) {
+      setImg(props.image.image);
+    }
+    //   let canvas = document.getElementById("faceCanvas");
+    //   let imagecomp = document.getElementById("faceImage");
+    //   imagecomp.src = props.image.image;
+    //   imagecomp.onload = function () {
+    //     console.log(canvas);
+    //     let ctx = canvas.getContext("2d");
+    //     canvas.width = props.image.coordinates[2];
+    //     canvas.height = props.image.coordinates[3];
+    //     ctx.drawImage(
+    //       imagecomp,
+    //       -props.image.coordinates[0],
+    //       -props.image.coordinates[1],
+    //       props.image.coordinates[2],
+    //       props.image.coordinates[3]
+    //     );
+    //   };
+
+    //   let t = canvas.toDataURL();
+    //   setImg(t);
+  }, [props.image]);
+  //if (props.index != -1) {
+  const [transformed, setTransformed] = useState(false);
+  //   function adjustDimensions() {
+  //   let im = document.getElementById("matchedImage");
+  //   let ratio=0;
+  //   if(props.image.coordinates[2]>props.image.coordinates[3]) {
+  //       ratio=
+  //   }
+  //   else {
+
+  //   }
+  //   im.translateX(props.image.coordinates[0]);
+  //   im.translateY(props.image.coordinates[1])
+  useEffect(() => {
+    function transforming() {
+      if (!transformed && img) {
+        console.log("laodedimage");
+        let canvas = document.getElementById("faceCanvas");
+        let imagecomp = document.getElementById("faceImage");
+        imagecomp.crossOrigin = "Anonymous";
+        imagecomp.src = props.image.image;
+        imagecomp.onload = function () {
+          console.log(canvas);
+          let ctx = canvas.getContext("2d");
+          canvas.width = props.image.coordinates[2] / 2;
+          canvas.height = props.image.coordinates[3] / 2;
+          console.log(imagecomp.actualWidth);
+          ctx.drawImage(
+            imagecomp,
+            -props.image.coordinates[0],
+            -props.image.coordinates[1],
+            props.image.coordinates[2],
+            props.image.coordinates[3]
+          );
+        };
+        setTransformed(true);
+        // let t = canvas.toDataURL();
+        // setImg(t);
+      }
+    }
+
+    setTimeout(() => {
+      transforming();
+    }, 1000);
+    //   }
+  }, [img]);
+  useEffect(() => {
+    if (transformed) {
+      console.log("transofrmed");
+      let canvas = document.getElementById("faceCanvas");
+      let imagecomp = document.getElementById("faceImage");
+      let t = canvas.toDataURL("image/png");
+      setImg(t);
+    }
+  }, [transformed]);
+  return (
+    <>
+      {/* <canvas id="faceCanvas" style={{ display: "block" }}></canvas> */}
+      <img
+        id="faceImage"
+        style={{ display: "none" }}
+        // onLoad={() => {
+        //   adjustDimensions();
+        // }}
+      ></img>
+      <img
+        id="matchedImage"
+        // className="d-inline-flex"
+
+        style={{ position: "fixed", borderRadius: "15px", display: "block" }}
+        src={img}
+      ></img>
+      {img ? (
+        <div className="col-12 row mx-0 justify-content-center align-items-center">
+          <div className="col-12 row mx-0 justify-content-center">
+            <canvas
+              id="faceCanvas"
+              className="d-flex mx-0 px-0 my-0"
+              style={{
+                width: props.image.coordinates[2] + "px",
+                height: props.image.coordinates[3] + "px",
+              }}
+              // style={{ display: "block" }}
+            ></canvas>
+          </div>
+          <div className="col-12 text-center">Matched Imaged</div>
+
+          {/* <div className="text-center">Reference Image</div> */}
+        </div>
+      ) : (
+        <div>
+          <div
+            className="d-inline-flex"
+            style={{
+              borderRadius: "15px",
+              backgroundImage: "url(" + stockPhoto + ")",
+              backgroundSize: "contain",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              height: "320px",
+              width: "180px",
+            }}
+            // src={props.images[props.index]}
+          >
+            <div
+              className="d-flex bd-blur shadow text-dark bold text-center justify-content-center align-items-center"
+              style={{ height: "320px", width: "180px", fontWeight: "bold" }}
+            >
+              {props.que}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+  //}
+  return (
+    <div>
+      <div
+        className="d-inline-flex"
+        style={{
+          borderRadius: "15px",
+          backgroundImage: "url(" + stockPhoto + ")",
+          backgroundSize: "contain",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          height: "320px",
+          width: "180px",
+        }}
+        src={props.images[props.index]}
+      >
+        <div
+          className="d-flex bd-blur shadow text-dark bold text-center justify-content-center align-items-center"
+          style={{ height: "320px", width: "180px", fontWeight: "bold" }}
+        >
+          {props.que}
+        </div>
+      </div>
+    </div>
+  );
+};
+export default FoundFace;
