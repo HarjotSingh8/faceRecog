@@ -160,6 +160,7 @@ function App() {
   //   if (foundFace) {
   //   }
   // }, [foundFace]);
+  console.log(queries);
   useEffect(() => {
     async function poll() {
       let temp = [...queries];
@@ -515,7 +516,12 @@ function App() {
       //     });
       //   if (temp.status === "Success") return temp;
       // }, 1000);
-      q.push({ img: im, query: reqId, result: false, index: i });
+      q.push({
+        img: im,
+        query: reqId,
+        result: false,
+        index: i,
+      });
 
       // let im = await new Promise((resolve) => c.toBlob(resolve, "image/png"));
       // q.push({
@@ -560,15 +566,13 @@ function App() {
           <div
             className={
               "col-12 text-light " +
-              (progressStatus.createDatabase.status === 0
-                ? "bg-secondary "
-                : "") +
-              (progressStatus.createDatabase.status === 1 ? "bg-success " : "")
+              (faces.length === 0 ? "bg-secondary " : "") +
+              (faces.length === 1 ? "bg-danger " : "") +
+              (faces.length > 1 ? "bg-success " : "")
             }
           >
             Step 1: Create your database
           </div>
-
           <div className="col-12 px-0">
             <FaceGrid images={faces} removeImage={removeFace} />
           </div>
@@ -611,7 +615,7 @@ function App() {
             Result updates here
           </div>
           <div className="row mx-0 col-12 bg-light">
-            <div className="col-4 d-flex mx-0 border justify-content-center">
+            <div className="col-4 d-flex mx-0 justify-content-center">
               <ReferenceImage
                 images={referenceFaces}
                 index={referenceFace}
@@ -619,19 +623,38 @@ function App() {
                 que="Reference Image Will be displayed here"
               />
             </div>
-            <div className="col-4 d-flex mx-0 border justify-content-center">
+            <div className="col-4 d-flex justify-content-center align-items-center">
+              <ResultControls
+                progressStatus={progressStatus}
+                startQuery={() => {
+                  prepareGridImage();
+                }}
+                foundFace={foundFace}
+                inProgress={processing}
+              />
+              {/* <button onClick={() => prepareGridImage()}>prepare</button> */}
+            </div>
+            <div className="col-4 d-flex mx-0 justify-content-center">
               {" "}
               <FoundFace
                 image={foundFace}
                 label="Mached Image"
                 que="Images Matched Will be displayed here"
                 localDimensions={imageDimensions}
+                faces={faces}
               />
             </div>
-            <div className="col-4 d-flex justify-content-center border align-items-center">
-              <ResultControls progressStatus={progressStatus} />
-              <button onClick={() => prepareGridImage()}>prepare</button>
-            </div>
+            {/* <div className="col-4 d-flex justify-content-center align-items-center">
+              <ResultControls
+                progressStatus={progressStatus}
+                startQuery={() => {
+                  prepareGridImage();
+                }}
+                foundFace={foundFace}
+                inProgress={processing}
+              />
+
+            </div> */}
           </div>
         </div>
       </div>

@@ -1,70 +1,82 @@
 import { useEffect, useState } from "react";
 import stockPhoto from "../images/stockperson.png";
+function getImageDimensions(file) {
+  return new Promise(function (resolved, rejected) {
+    var i = new Image();
+    i.onload = function () {
+      resolved({ w: i.width, h: i.height });
+    };
+    i.src = file;
+  });
+}
 const FoundFace = (props) => {
   const [img, setImg] = useState(false);
+  const [index, setIndex] = useState(false);
+  const [faceCenter, setCenter] = useState(null);
   useEffect(() => {
     if (props.image != false) {
       setImg(props.image.image);
+      let imagecomp = document.getElementById("faceImage");
+      imagecomp.crossOrigin = "Anonymous";
+      imagecomp.src = props.image.image;
+      imagecomp.onload = function () {
+        let width = imagecomp.naturalWidth;
+        let height = imagecomp.naturalHeight;
+        console.log(height);
+        console.log(width);
+
+        let centerOfImage = [
+          (props.image.coordinates[0] + props.image.coordinates[2]) / 2,
+          (props.image.coordinates[1] + props.image.coordinates[3]) / 2,
+        ];
+        var imagesInRow = Math.floor(props.localDimensions[1] / 160);
+        console.log(imagesInRow);
+        console.log(centerOfImage);
+        var indx =
+          Math.floor((imagesInRow * centerOfImage[1]) / height) * imagesInRow +
+          Math.floor((imagesInRow * centerOfImage[0]) / width);
+        console.log(centerOfImage[0] / width);
+        console.log(indx);
+        console.log(getImageDimensions(props.image.image));
+
+        setIndex(indx);
+        console.log(props);
+        console.log(indx);
+      };
     } else if (props.image == false) {
       setImg(false);
     }
   }, [props.image]);
-  //if (props.index != -1) {
-  const [transformed, setTransformed] = useState(false);
 
-  useEffect(() => {
-    function transforming() {
-      if (img) {
-        console.log("laodedimage");
-        let canvas = document.getElementById("faceCanvas");
-        let imagecomp = document.getElementById("faceImage");
-        imagecomp.crossOrigin = "Anonymous";
-        imagecomp.src = props.image.image;
-        imagecomp.onload = function () {
-          console.log(canvas);
-          let ctx = canvas.getContext("2d");
-          let x = props.image.coordinates[2] / 2;
-          let y = props.image.coordinates[3] / 2;
-          if (x > (y * 9) / 16) {
-            x = (y * 9) / 16;
-          } else {
-            y = (x * 16) / 9;
-          }
-          canvas.width = x;
-          canvas.height = y;
-
-          console.log(imagecomp.actualWidth);
-          ctx.drawImage(
-            imagecomp,
-            -props.image.coordinates[0],
-            -props.image.coordinates[1],
-            props.image.coordinates[2],
-            props.image.coordinates[3]
-          );
-        };
-        setTransformed(true);
-        // let t = canvas.toDataURL();
-        // setImg(t);
-      }
-    }
-
-    setTimeout(() => {
-      transforming();
-    }, 1000);
-    //   }
-  }, [img]);
-  //   useEffect(() => {
-  //     if (transformed) {
-  //       console.log("transofrmed");
-  //       let canvas = document.getElementById("faceCanvas");
-  //       let imagecomp = document.getElementById("faceImage");
-  //       let t = canvas.toDataURL("image/png");
-  //       setImg(t);
-  //     }
-  //   }, [transformed]);
   return (
     <>
       {/* <canvas id="faceCanvas" style={{ display: "block" }}></canvas> */}
+      {/* <div
+        className="shadow"
+        style={{
+          position: "absolute",
+          width: "180px",
+          height: "320px",
+          display: "block",
+          background: "url(" + (index ? props.faces[index] : "") + ")",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          borderRadius: "15px",
+        }}
+      ></div> */}
+      <div
+        className="shadow"
+        src={"url(" + (index ? props.faces[index] : "") + ")"}
+        style={{
+          position: "absolute",
+          width: "180px",
+          height: "320px",
+          display: "block",
+          backgroundImage: "url(" + (index ? props.faces[index] : "") + ")",
+          backgroundSize: "cover",
+          borderRadius: "15px",
+        }}
+      />
       <img
         id="faceImage"
         style={{ display: "none" }}
