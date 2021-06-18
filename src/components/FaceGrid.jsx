@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import ImageUploadButton from "./imageUploadButton";
-import AddToPhotosIcon from "@material-ui/icons/AddToPhotos";
 import DeleteForever from "@material-ui/icons/DeleteForever";
-import { LocalConvenienceStoreRounded } from "@material-ui/icons";
 import personImage from "../images/stockperson.png";
 const DummyGrid = (props) => {
   return (
@@ -41,7 +37,7 @@ const FaceGrid = (props) => {
   return (
     <div id="faceGrid" className="row mx-0 justify-content-center px-2">
       {props.images.map((obj, index) => (
-        <div className="my-2 mx-2 shadow px-0">
+        <div key={"face" + index} className="my-2 mx-2 shadow px-0">
           <DeleteForever
             style={{
               position: "absolute",
@@ -51,9 +47,7 @@ const FaceGrid = (props) => {
               cursor: "pointer",
             }}
             onClick={() => {
-              //   if (active > 0) setActive(active - 1);
-              //   if (props.images.length == 1) setActive(-1);
-              props.removeImage(index);
+              if (props.result !== true) props.removeImage(index);
             }}
           />
           <img src={obj} />

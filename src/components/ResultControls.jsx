@@ -1,16 +1,52 @@
 const ResultControls = (props) => {
+  if (props.numFaces == 0 || props.numReferences == 0) {
+    return (
+      <div className="btn btn-danger disabled">
+        Complete Steps 1 & 2 to Match Results
+      </div>
+    );
+  }
+  if (props.progressStatus.result == false) {
+    return (
+      <div className="row mx-0 justify-content-center">
+        <button
+          className="btn btn-secondary"
+          onClick={() => props.startQuery()}
+        >
+          Check For Matches
+        </button>
+      </div>
+    );
+  }
+  if (props.progressStatus.result) {
+    return (
+      <div className="row mx-0 justify-content-center">
+        <div className="row mx-0 justify-content-center">
+          {props.foundFace ? (
+            <button className="btn btn-success disabled">Match Found</button>
+          ) : (
+            <button className="btn btn-danger disabled">Match not Found</button>
+          )}
+        </div>
+        <div className="row mx-0 my-3 justify-content-center">
+          <button className="btn btn-success " onClick={() => props.reset()}>
+            Try Another Query
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (
     props.progressStatus.createDatabase.status == 0 ||
     props.progressStatus.uploadReferenceImage.status == 0
   ) {
-    //cannot evaluate results
     return (
       <div className="btn btn-danger disabled">
         Complete Steps 1 & 2 to Match Results
       </div>
     );
   } else if (props.progressStatus.results.status == 0) {
-    //can evaluate results
     return (
       <button onClick={() => props.startQuery()}>Check For Matches</button>
     );

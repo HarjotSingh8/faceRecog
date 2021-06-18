@@ -11,8 +11,6 @@ const WebcamComponent = (props) => {
   }, [image]);
   const capture = React.useCallback(() => {
     var imageSrc = webcamRef.current.getScreenshot();
-    //var imageSrc = document.getElementById("webcam").getScreenshot();
-    ///props.addImage(imageSrc);
     setImage(imageSrc);
   }, [webcamRef]);
 

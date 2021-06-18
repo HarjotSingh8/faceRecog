@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 const ImageUploadButton = (props) => {
   return (
     <div style={{ display: "inline-flex" }}>

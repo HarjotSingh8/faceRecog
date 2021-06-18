@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import ImageUploadButton from "./imageUploadButton";
-import AddToPhotosIcon from "@material-ui/icons/AddToPhotos";
 import DeleteForever from "@material-ui/icons/DeleteForever";
-import { LocalConvenienceStoreRounded } from "@material-ui/icons";
 import personImage from "../images/stockperson.png";
 const DummyGrid = (props) => {
   return (
@@ -42,6 +38,7 @@ const ReferenceGrid = (props) => {
     <div id="referenceGrid" className="row mx-0 justify-content-center px-2">
       {props.images.map((obj, index) => (
         <div
+          key={"reference" + index}
           className={
             "my-2 mx-2 shadow px-0  " +
             (props.active == index ? "activeGrid" : "inactiveGrid")
@@ -56,10 +53,12 @@ const ReferenceGrid = (props) => {
               cursor: "pointer",
             }}
             onClick={() => {
-              if (props.active > 0 && props.active >= index)
-                props.setActive(props.active - 1);
-              if (props.images.length == 1) props.setActive(-1);
-              props.removeImage(index);
+              if (props.result !== true) {
+                if (props.active > 0 && props.active >= index)
+                  props.setActive(props.active - 1);
+                if (props.images.length == 1) props.setActive(-1);
+                props.removeImage(index);
+              }
             }}
           />
           <img
@@ -69,7 +68,7 @@ const ReferenceGrid = (props) => {
               props.active == index ? "activeGridImg" : "inactiveGridImg"
             }
             onClick={() => {
-              props.setActive(index);
+              if (props.result !== true) props.setActive(index);
             }}
           />
         </div>
