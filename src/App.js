@@ -10,61 +10,37 @@ import ReferenceImage from "./components/ReferenceImage";
 import ResultControls from "./components/ResultControls";
 import FoundFace from "./components/FoundFace";
 
-import useInterval from "./components/useInterval";
+import Tips from "./components/tips";
+import { FormatUnderlinedSharp } from "@material-ui/icons";
 function App() {
   const [modelLoaded, setModelLoaded] = useState(false);
-  const [multiFaceUpload, setMultiFaceUpload] = useState(true);
   const [faces, setFaces] = useState([]);
   const [referenceFaces, setReferenceFaces] = useState([]);
   const [referenceFace, setReferenceFace] = useState(-1);
-  const [capturingWebCamForDatabase, setCapturingWebCamForDatabase] =
-    useState(false);
-  const [capturingWebcamForReference, setCapturingWebCamForReference] =
-    useState(false);
   const [processing, setProcessing] = useState(false);
   const [queries, setQueries] = useState([]);
   const [imageDimensions, setImageDimensions] = useState([]);
   const [foundFace, setFoundFace] = useState(false);
-
-  /**
-   * progress states
-   *
-   * startingdatabase - database empty
-   * workingdatabase - filling database
-   * startingreference - reference empty
-   * workingreference - selecting reference image
-   * loadingresults - loading results
-   * loadedresults - loaded results
-   */
   const [progressStatus, setProgressStatus] = useState({
+    fetchingResults: false,
+    inputResource: "",
+    inputTarget: "",
+    foundFace: false,
+    result: false,
+
     createDatabase: { label: "Create Database", status: 0 },
     uploadReferenceImage: { label: "Upload Reference", status: 0 },
     results: { label: "Results", status: 0 },
   });
-  const [active, setActive] = useState("createDatabase");
+
   useEffect(() => {
     if (referenceFaces.length > 0 && referenceFace == -1) {
-      let temp = { ...progressStatus };
-      temp.uploadReferenceImage.status = 1;
-      setProgressStatus(temp);
       setReferenceFace(0);
-    } else {
-      let temp = { ...progressStatus };
-      temp.uploadReferenceImage.status = 0;
-      setProgressStatus(temp);
     }
   }, [referenceFaces]);
-  useEffect(() => {
-    if (faces.length > 0) {
-      let temp = { ...progressStatus };
-      temp.createDatabase.status = 1;
-      setProgressStatus(temp);
-    } else {
-      let temp = { ...progressStatus };
-      temp.createDatabase.status = 0;
-      setProgressStatus(temp);
-    }
-  }, [faces]);
+  /**
+   * Load Model
+   */
   useEffect(() => {
     async function loadModel() {
       const MODEL_URL = process.env.PUBLIC_URL + "/models";
@@ -74,93 +50,9 @@ function App() {
     loadModel();
   }, []);
 
-  // useEffect(() => {
-  //   async function postQueries() {
-  //     if (queries.length != 0) {
-  //       let c = document.getElementById("hiddenCanvas");
-  //       let ctx = c.getContext("2d");
-  //       let temp = [...queries];
-  //       let hiddenImage = document.getElementById("hiddenImage");
-  //       for (let i = 0; i < temp.length; i++) {
-  //         if (temp[i].query == false) {
-  //           // console.log(temp[i].img);
-  //           var data = new FormData();
-  //           c.width = imageDimensions[0];
-  //           c.height = imageDimensions[1];
-  //           hiddenImage.src = temp[i].img;
-  //           console.log("yes");
-  //           // let t = setTimeout(() => {}, 500);
-  //           await new Promise((resolve) => setTimeout(resolve, 500));
-
-  //           console.log("another yes");
-  //           var data = new FormData();
-  //           ctx.drawImage(
-  //             hiddenImage,
-  //             0,
-  //             0,
-  //             imageDimensions[0],
-  //             imageDimensions[1]
-  //           );
-  //           console.log(imageDimensions);
-  //           console.log(hiddenImage);
-
-  //           let imageBlob = await new Promise((resolve) =>
-  //             c.toBlob(resolve, "image/png")
-  //           );
-
-  //           c.width = 180;
-  //           c.height = 320;
-  //           hiddenImage.src = referenceFaces[referenceFace];
-  //           setTimeout(() => {}, 100);
-  //           ctx.drawImage(hiddenImage, 0, 0, 180, 320);
-  //           let imageBlob1 = await new Promise((resolve) =>
-  //             c.toBlob(resolve, "image/png")
-  //           );
-  //           data.set("query_image", imageBlob, "file2.png");
-  //           data.set("target_image", imageBlob1, "file1.png");
-  //           data.set(
-  //             "key",
-  //             "662b2a0adeb3bbc7388bb274fc735c98648f0c70e6ebde9aebb9b56784f05d33"
-  //           );
-  //           hiddenImage.src = URL.createObjectURL(imageBlob);
-  //           fetch("https://api.skylarklabs.ai/face-recognition/", {
-  //             method: "POST",
-  //             body: data,
-  //           })
-  //             .then((response) => response.json())
-  //             .then((data) => {
-  //               console.log(data);
-  //               temp[i].query = data.id;
-  //               setQueries(temp);
-  //             });
-  //           //   UseInterval(async () => {
-  //           //     console.log("poll");
-  //           //     fetch(
-  //           //       "https://api.skylarklabs.ai/face-recognition/" +
-  //           //         temp[i].query +
-  //           //         "?key=662b2a0adeb3bbc7388bb274fc735c98648f0c70e6ebde9aebb9b56784f05d33",
-  //           //       {
-  //           //         method: "GET",
-  //           //       }
-  //           //     )
-  //           //       .then((response) => response.json())
-  //           //       .then((data) => {
-  //           //         console.log(data);
-  //           //         if (data.status == "success") clearInterval();
-  //           //       });
-  //           //   }, 1000);
-  //           //   break;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   postQueries();
-  // }, [queries]);
-  // useEffect(() => {
-  //   if (foundFace) {
-  //   }
-  // }, [foundFace]);
-  console.log(queries);
+  /**
+   * Polling Function
+   */
   useEffect(() => {
     async function poll() {
       let temp = [...queries];
@@ -184,24 +76,6 @@ function App() {
             temp[i].result = res;
             temp[i].result.json = JSON.parse(temp[i].result.response_json);
             setQueries(temp);
-            // if (temp[i].result.json.reference_detections.length > 0) {
-            //   let c = document.getElementById("hiddenCanvas2");
-            //   let ctx = c.getContext("2d");
-            //   //document.getElementById("hiddenImage").src = queries[i].img;
-            //   let x = document.getElementById("hiddenImage");
-            //   ctx.drawImage(
-            //     x,
-            //     temp[i].result.json.reference_detections[0].coordinates[0],
-            //     temp[i].result.json.reference_detections[0].coordinates[1],
-            //     temp[i].result.json.reference_detections[0].coordinates[2],
-            //     temp[i].result.json.reference_detections[0].coordinates[3]
-            //   );
-            //   // let imageBlob = await new Promise((resolve) =>
-            //   //   c.toBlob(resolve, "image/png")
-            //   // );
-            //   let y = c.toDataURL();
-            //   document.getElementById("hiddenImage2").src = y;
-            // }
           } else if (res.status == "pending") {
             setQueries([...temp]);
           } else {
@@ -218,12 +92,17 @@ function App() {
     ) {
       setProgressStatus({
         ...progressStatus,
-        results: { ...progressStatus.results, status: 1 },
+        result: true,
       });
     } else poll();
   }, [queries]);
+
+  /**
+   * Handles response from the queries
+   * checks if a matched face is found
+   */
   useEffect(() => {
-    if (progressStatus.results.status == 1) {
+    if (progressStatus.result == true && foundFace === false) {
       let active = null;
       for (let i = 0; i < queries.length; i++) {
         console.log("here");
@@ -240,7 +119,6 @@ function App() {
               active.coordinates =
                 queries[i].result.json.query_detections[j].coordinates;
               active.image = queries[i].img;
-              //active.image = queries[i].result.query_image;
             }
           }
         }
@@ -248,19 +126,7 @@ function App() {
       console.log(active);
       if (active != null) {
         setFoundFace(active);
-        // let c = document.getElementById("hiddenCanvas2");
-        // let ctx = c.getContext("2d");
-        // //document.getElementById("hiddenImage").src = queries[i].img;
-        // let x = document.getElementById("hiddenImage");
-        // ctx.drawImage(
-        //   x,
-        //   active.coordinates[0],
-        //   active.coordinates[1],
-        //   active.coordinates[2],
-        //   active.coordinates[3]
-        // );
-        // let y = c.toDataURL();
-        // document.getElementById("hiddenImage2").src = y;
+        setProgressStatus({ ...progressStatus, result: true });
       }
     }
   }, [progressStatus]);
@@ -268,29 +134,13 @@ function App() {
   async function postRequest(image) {
     let c = document.getElementById("hiddenCanvas");
     let ctx = c.getContext("2d");
-    // let temp = [...queries];
     let hiddenImage = document.getElementById("hiddenImage");
     let hiddenImage2 = document.getElementById("hiddenImage2");
-
-    // console.log(temp[i].img);
     var data = new FormData();
-    //c.width = imageDimensions[0];
-    //c.height = imageDimensions[1];
-    // console.log("yes");
-    // // let t = setTimeout(() => {}, 500);
-    // await new Promise((resolve) => setTimeout(resolve, 1500));
-    //console.log("another yes");
     hiddenImage.src = image;
-    //await hiddenImage.onload();
-    //setTimeout(() => {}, 100);
-    //ctx.drawImage(hiddenImage2, 0, 0, 1080, 1920);
-    // console.log(imageDimensions);
-    // console.log(hiddenImage);
     let imageBlob = await new Promise((resolve) =>
       c.toBlob(resolve, "image/png")
     );
-    //console.log(imageBlob);
-    //await new Promise((resolve) => setTimeout(resolve, 1500));
     data.set("query_image", imageBlob, "file2.png");
     c.width = 180;
     c.height = 320;
@@ -320,28 +170,7 @@ function App() {
       });
   }
   console.log(queries);
-  // useEffect(() => {
-  //   if (queries.length > 0 && queries[queries.length - 1].query) {
-  //     let temp = [...queries];
-  //     for (var i = 0; i < temp.length; i++) {
-  //       if (!temp[i].result) {
-  //         let res = fetch(
-  //           "https://api.skylarklabs.ai/face-recognition/" +
-  //             temp[i].query +
-  //             "?key=662b2a0adeb3bbc7388bb274fc735c98648f0c70e6ebde9aebb9b56784f05d33",
-  //           {
-  //             method: "GET",
-  //           }
-  //         )
-  //           .then((response) => response.json())
-  //           .then((data) => {
-  //             console.log(data);
-  //           });
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }, [queries]);
+
   /**
    * Functions
    *
@@ -400,9 +229,7 @@ function App() {
     return temp;
   }
   async function handleFileInput(addedImage, target) {
-    //console.log(addedImage);
     setProcessing(true);
-    //let addedImage = URL.createObjectURL(e.target.files[0]);
     document.getElementById("hiddenImage").src = addedImage;
     let newFaces = await processFaces();
     if (target == "database") {
@@ -416,12 +243,20 @@ function App() {
     setProcessing(true);
     document.getElementById("hiddenImage").src = addedImage;
     let newFaces = await processFaces();
-    if (capturingWebCamForDatabase) {
+    if (progressStatus.inputTarget == "database") {
       setFaces([...faces, ...newFaces]);
-      setCapturingWebCamForDatabase(false);
-    } else if (capturingWebcamForReference) {
+      setProgressStatus({
+        ...progressStatus,
+        inputResource: "",
+        inputTarget: "",
+      });
+    } else if (progressStatus.inputTarget == "reference") {
       setReferenceFaces([...referenceFaces, ...newFaces]);
-      setCapturingWebCamForReference(false);
+      setProgressStatus({
+        ...progressStatus,
+        inputResource: "",
+        inputTarget: "",
+      });
     }
     setProcessing(false);
   }
@@ -445,19 +280,40 @@ function App() {
         URL.revokeObjectURL(referenceFaces[i]);
       }
     }
+    if (progressStatus.active_reference === index) {
+      setProgressStatus({ ...progressStatus, active_reference: -1 });
+    } else if (progressStatus.active_reference > index) {
+      setProgressStatus({
+        ...progressStatus,
+        active_reference: progressStatus.active_reference - 1,
+      });
+    }
     setReferenceFaces(temp);
   };
-  const updateProgress = (level, status) => {
-    var progress = { ...progressStatus };
-    // console.log(progress);
-    progress[level].status = status;
-    setProgressStatus(progress);
-  };
+
   const closeWebcam = () => {
-    if (capturingWebCamForDatabase) setCapturingWebCamForDatabase(false);
-    if (capturingWebcamForReference) setCapturingWebCamForReference(false);
+    console.log("yes");
+    if (progressStatus.inputResource === "camera")
+      setProgressStatus({
+        ...progressStatus,
+        inputResource: "",
+        inputTarget: "",
+      });
   };
+  const startWebCam = (target) => {
+    setProgressStatus({
+      ...progressStatus,
+      inputResource: "camera",
+      inputTarget: target,
+    });
+  };
+
+  /**
+   * prepares a grid for the target image (query)
+   *
+   */
   async function prepareGridImage() {
+    //prepares grid for query and sends request
     var c = document.getElementById("hiddenCanvas");
     var hiddenImage = document.getElementById("hiddenImage2");
     var ctx = c.getContext("2d");
@@ -481,7 +337,6 @@ function App() {
         i * length_in_images + j < faces.length;
         j++
       ) {
-        //console.log("yes");
         let index = i * length_in_images * length_in_images + j;
         hiddenImage.src = faces[index];
         ctx.drawImage(
@@ -495,62 +350,33 @@ function App() {
       var im = c.toDataURL();
       await new Promise((resolve) => setTimeout(resolve, 1000));
       let reqId = await postRequest(im);
-      //console.log(temp);
-      // useInterval(async () => {
-      //   console.log("poll");
-      //   let temp = fetch(
-      //     "https://api.skylarklabs.ai/face-recognition/" +
-      //       reqId +
-      //       "?key=662b2a0adeb3bbc7388bb274fc735c98648f0c70e6ebde9aebb9b56784f05d33",
-      //     {
-      //       method: "GET",
-      //     }
-      //   )
-      //     .then((response) => response.json())
-      //     .then((data) => {
-      //       console.log(data);
-      //       if (data.status == "Success") {
-      //         clearInterval();
-      //       }
-      //       return data;
-      //     });
-      //   if (temp.status === "Success") return temp;
-      // }, 1000);
       q.push({
         img: im,
         query: reqId,
         result: false,
         index: i,
       });
-
-      // let im = await new Promise((resolve) => c.toBlob(resolve, "image/png"));
-      // q.push({
-      //   img: im,
-      //   query: false,
-      //   result: false,
-      //   index: i,
-      // });
     }
     setQueries(q);
-    // ctx.width = grid_in_images * 90;
-    // ctx.height = grid_in_images * 160;
-    //ctx.drawImage(img, 10, 10, 90, 160);
+  }
+  function reset() {
+    setProgressStatus({ ...progressStatus, result: false });
+    setFoundFace(false);
+    setQueries([]);
   }
   return (
     <div className="App ">
       <div
         id="webcamBackdrop"
         className={
-          capturingWebCamForDatabase || capturingWebcamForReference
-            ? "d-block"
-            : "d-none"
+          progressStatus.inputResource === "camera" ? "d-block" : "d-none"
         }
         style={{
           width: window.innerWidth,
           height: window.innerHeight,
         }}
       >
-        {capturingWebCamForDatabase || capturingWebcamForReference ? (
+        {progressStatus.inputResource === "camera" ? (
           <WebcamComponent
             addImage={handleWebcamInput}
             closeWebcam={closeWebcam}
@@ -566,54 +392,101 @@ function App() {
           <div
             className={
               "col-12 text-light " +
-              (faces.length === 0 ? "bg-secondary " : "") +
-              (faces.length === 1 ? "bg-danger " : "") +
-              (faces.length > 1 ? "bg-success " : "")
+              (faces.length > 0 ? "bg-success " : "bg-secondary")
             }
           >
             Step 1: Create your database
           </div>
           <div className="col-12 px-0">
-            <FaceGrid images={faces} removeImage={removeFace} />
+            <FaceGrid
+              result={progressStatus.result}
+              images={faces}
+              removeImage={removeFace}
+            />
           </div>
+          {/* <Tips
+            tips={[
+              {
+                condition: faces.length == 0,
+                text: "Faces can be added from a file or the database",
+              },
+              {
+                condition: faces.length == 1,
+                text: "Database can have mutiple faces",
+              },
+            ]}
+          /> */}
           <div className="col-12 d-flex justify-content-center">
             <UploadButtonGroup
               label="Import Faces"
-              webcamFunction={setCapturingWebCamForDatabase}
+              webcamFunction={() => startWebCam("database")}
               modelLoaded={modelLoaded}
-              handleFileInput={handleFileInput}
+              handleFileInput={(arg) => handleFileInput(arg, "database")}
               target="database"
+              processing={processing}
             />
           </div>
         </div>
         <div id="referenceArea" className="row mx-0 bg-light px-0">
-          <div className="col-12 text-light bg-secondary">
+          <div
+            className={
+              "col-12 text-light " +
+              (referenceFaces.length > 0 ? "bg-success" : "bg-secondary")
+            }
+          >
             Step 2: Add a reference face
           </div>
-
           <ReferenceGrid
+            result={progressStatus.result}
             images={referenceFaces}
             removeImage={removeReferenceFace}
             active={referenceFace}
             setActive={setReferenceFace}
           />
-
+          {/* <Tips
+            tips={[
+              {
+                condition: referenceFaces.length == 0,
+                text: "Faces can be added from a file or the database",
+              },
+            ]}
+          /> */}
           <div className="col-12 d-flex justify-content-center pb-2">
             <UploadButtonGroup
               label="Import Faces"
-              webcamFunction={setCapturingWebCamForReference}
+              webcamFunction={() => startWebCam("reference")}
               modelLoaded={modelLoaded}
-              handleFileInput={handleFileInput}
+              handleFileInput={(arg) => handleFileInput(arg, "reference")}
               target="reference"
+              processing={processing}
             />
           </div>
         </div>
         <div id="referenceEntryArea"></div>
         <div id="resultArea" className="row mx-0 bg-light px-0">
-          <div className="col-12 text-light bg-secondary">Results</div>
-          <div className="col-12 bg-light text-center text-success ">
-            Result updates here
+          <div
+            className={
+              "col-12 text-light " + (foundFace ? "bg-success" : "bg-secondary")
+            }
+          >
+            Results
           </div>
+          <Tips
+            tips={[
+              {
+                condition: !progressStatus.result,
+                text: "Results will be displayed here",
+              },
+              {
+                condition: foundFace,
+                text: "Found a Matching face, to run another query press the button below",
+              },
+              {
+                condition: !foundFace,
+                text: "No face matched, try updating database or with better images",
+              },
+            ]}
+          />
           <div className="row mx-0 col-12 bg-light">
             <div className="col-4 d-flex mx-0 justify-content-center">
               <ReferenceImage
@@ -626,16 +499,18 @@ function App() {
             <div className="col-4 d-flex justify-content-center align-items-center">
               <ResultControls
                 progressStatus={progressStatus}
+                numFaces={faces.length}
+                numReferences={referenceFaces.length}
                 startQuery={() => {
                   prepareGridImage();
                 }}
                 foundFace={foundFace}
                 inProgress={processing}
+                reset={reset}
               />
               {/* <button onClick={() => prepareGridImage()}>prepare</button> */}
             </div>
             <div className="col-4 d-flex mx-0 justify-content-center">
-              {" "}
               <FoundFace
                 image={foundFace}
                 label="Mached Image"
@@ -644,17 +519,6 @@ function App() {
                 faces={faces}
               />
             </div>
-            {/* <div className="col-4 d-flex justify-content-center align-items-center">
-              <ResultControls
-                progressStatus={progressStatus}
-                startQuery={() => {
-                  prepareGridImage();
-                }}
-                foundFace={foundFace}
-                inProgress={processing}
-              />
-
-            </div> */}
           </div>
         </div>
       </div>

@@ -10,7 +10,9 @@ const UploadButtonGroup = (props) => {
         input_id={props.target + "Image"}
       >
         <div
-          className="col-12 btn btn-success"
+          className={
+            "col-12 btn btn-success" + (props.processing ? "disabled" : "")
+          }
           style={{
             borderTopRightRadius: "0px",
             borderBottomRightRadius: "0px",
@@ -20,9 +22,10 @@ const UploadButtonGroup = (props) => {
         </div>
       </ImageUploadButton>
       <button className="col btn btn-success disabled">{props.label}</button>
-
       <button
-        className="col btn btn-success"
+        className={
+          "col btn btn-success " + (props.processing ? "disabled" : "")
+        }
         onClick={() => {
           props.webcamFunction(true);
         }}
